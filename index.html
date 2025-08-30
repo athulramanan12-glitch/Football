@@ -1,86 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>xG Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 2rem;
-      background: #f9fafc;
-      color: #222;
-    }
-    h1 { text-align: center; }
-    canvas { max-width: 800px; margin: 2rem auto; display: block; }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 2rem;
-    }
-    th, td {
-      border: 1px solid #ccc; padding: 0.6rem; text-align: center;
-    }
-    th { background: #eee; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>xG Calculator</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Expected Goals (xG) Dashboard</h1>
+  <div class="container">
+    <h1>Expected Goals (xG) Calculator</h1>
 
-  <!-- Chart -->
-  <canvas id="xgChart"></canvas>
+    <div id="shotInputs">
+      <div class="shot-input">
+        <label>Distance to Goal (meters):</label>
+        <input type="number" class="distance" placeholder="Enter distance" step="0.1" required>
 
-  <!-- Table -->
-  <h2>Match Summary</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Team</th>
-        <th>Goals</th>
-        <th>xG</th>
-        <th>Shots</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Team A</td>
-        <td>2</td>
-        <td>1.6</td>
-        <td>12</td>
-      </tr>
-      <tr>
-        <td>Team B</td>
-        <td>1</td>
-        <td>2.1</td>
-        <td>14</td>
-      </tr>
-    </tbody>
-  </table>
+        <label>Angle from Goal (degrees):</label>
+        <input type="number" class="angle" placeholder="Enter angle" step="1" max="180" required>
 
-  <script>
-    const ctx = document.getElementById('xgChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Team A', 'Team B'],
-        datasets: [
-          {
-            label: 'Goals',
-            data: [2, 1],
-            backgroundColor: 'rgba(75, 192, 192, 0.7)'
-          },
-          {
-            label: 'Expected Goals (xG)',
-            data: [1.6, 2.1],
-            backgroundColor: 'rgba(255, 99, 132, 0.7)'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'top' } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-  </script>
+        <label>Type of Shot:</label>
+        <select class="shotType">
+          <option value="foot">Foot</option>
+          <option value="head">Header</option>
+        </select>
+
+        <label>Shot Situation:</label>
+        <select class="situation">
+          <option value="openPlay">Open Play</option>
+          <option value="setPiece">Set Piece</option>
+          <option value="counterAttack">Counter Attack</option>
+        </select>
+
+        <label>Defender Pressure:</label>
+        <select class="pressure">
+          <option value="low">Low Pressure</option>
+          <option value="medium">Medium Pressure</option>
+          <option value="high">High Pressure</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" onclick="addShot()">+ Add Another Shot</button>
+    <button type="button" onclick="calculateTotalXG()">Calculate Total xG</button>
+
+    <div id="result">
+      Total xG: <span id="total-xg-result">0.00</span>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
