@@ -1,48 +1,44 @@
-// Calculate xG for the single main form fields
-function calculateXG() {
-  const distance = parseFloat(document.getElementById("distance").value);
-  const angle = parseFloat(document.getElementById("angle").value);
-  const shotType = document.getElementById("shotType").value;
-  const situation = document.getElementById("situation").value;
-  const pressure = document.getElementById("pressure").value;
-
-  const xg = calculateXGForShot(distance, angle, shotType, situation, pressure);
-  document.getElementById("xg-result").textContent = xg.toFixed(2);
-}
-
-// Function to calculate xG for one shot based on parameters
+// --- core model for one shot ---
 function calculateXGForShot(distance, angle, shotType, situation, pressure) {
-  let xg = 0.3; // base probability
+  // numbers
+  distance = Number(distance);
+  angle = Number(angle);
 
-  // distance effect
-  if (distance > 20) xg *= 0.3;
-  else if (distance > 10) xg *= 0.6;
-  else xg *= 0.9;
+  if (!isFinite(distance) || !isFinite(angle)) return 0;
 
-  // angle effect
-  if (angle > 60) xg *= 0.5;
-  else if (angle > 30) xg *= 0.7;
+  let xg = 0;
+
+  // distance (exponential decay)
+  const distanceFactor = Math.exp(-distance / 30);
+  xg += distanceFactor;
+
+  // angle contribution
+  if (angle <= 30) xg += 0.3;
+  else if (angle <= 60) xg += 0.2;
+  else if (angle <= 90) xg += 0.1;
+  else xg += 0.05;
 
   // shot type
-  if (shotType === "head") xg *= 0.7;
+  xg += (shotType === "foot") ? 0.1 : -0.1;
 
   // situation
-  if (situation === "setPiece") xg *= 0.8;
-  if (situation === "counterAttack") xg *= 1.2;
+  if (situation === "openPlay") xg += 0.1;
+  else if (situation === "setPiece") xg += 0.05;
+  else if (situation === "counterAttack") xg += 0.15;
 
-  // defender pressure
-  if (pressure === "high") xg *= 0.6;
-  if (pressure === "medium") xg *= 0.8;
+  // pressure
+  if (pressure === "low") xg += 0.1;
+  else if (pressure === "medium") xg += 0.05;
+  else if (pressure === "high") xg -= 0.1;
 
-  return xg;
+  // clamp 0..1
+  return Math.max(0, Math.min(1, xg));
 }
 
-// Add another shot input block
-function addShot() {
-  const shotInputs = document.getElementById("shotInputs");
-
+// --- helpers ---
+function createShotInputBlock() {
   const div = document.createElement("div");
-  div.classList.add("shot-input");
+  div.className = "shot-input";
   div.innerHTML = `
     <label>Distance to Goal (meters):</label>
     <input type="number" class="distance" placeholder="Enter distance" step="0.1" required>
@@ -70,31 +66,52 @@ function addShot() {
       <option value="high">High Pressure</option>
     </select>
   `;
-
-  shotInputs.appendChild(div);
+  return div;
 }
 
-// Calculate total xG from all added shots
-function calculateTotalXG() {
-  const distances = document.querySelectorAll(".distance");
-  const angles = document.querySelectorAll(".angle");
-  const shotTypes = document.querySelectorAll(".shotType");
-  const situations = document.querySelectorAll(".situation");
-  const pressures = document.querySelectorAll(".pressure");
+// --- expose functions for your inline onclick handlers ---
+window.calculateXG = function () {
+  const distance = document.getElementById("distance")?.value;
+  const angle = document.getElementById("angle")?.value;
+  const shotType = document.getElementById("shotType")?.value;
+  const situation = document.getElementById("situation")?.value;
+  const pressure = document.getElementById("pressure")?.value;
 
-  let totalXG = 0;
+  const xg = calculateXGForShot(distance, angle, shotType, situation, pressure);
+  const out = document.getElementById("xg-result");
+  if (out) out.textContent = xg.toFixed(2);
+};
 
-  for (let i = 0; i < distances.length; i++) {
-    const distance = parseFloat(distances[i].value);
-    const angle = parseFloat(angles[i].value);
-    const shotType = shotTypes[i].value;
-    const situation = situations[i].value;
-    const pressure = pressures[i].value;
+window.addShot = function () {
+  const wrap = document.getElementById("shotInputs");
+  if (wrap) wrap.appendChild(createShotInputBlock());
+};
 
-    if (!isNaN(distance) && !isNaN(angle)) {
-      totalXG += calculateXGForShot(distance, angle, shotType, situation, pressure);
+window.calculateTotalXG = function () {
+  const distances = document.querySelectorAll("#shotInputs .distance");
+  const angles = document.querySelectorAll("#shotInputs .angle");
+  const shotTypes = document.querySelectorAll("#shotInputs .shotType");
+  const situations = document.querySelectorAll("#shotInputs .situation");
+  const pressures = document.querySelectorAll("#shotInputs .pressure");
+
+  let total = 0;
+  const n = Math.min(
+    distances.length, angles.length,
+    shotTypes.length, situations.length, pressures.length
+  );
+
+  for (let i = 0; i < n; i++) {
+    const d = distances[i].value;
+    const a = angles[i].value;
+    const st = shotTypes[i].value;
+    const si = situations[i].value;
+    const pr = pressures[i].value;
+
+    if (d !== "" && a !== "") {
+      total += calculateXGForShot(d, a, st, si, pr);
     }
   }
 
-  document.getElementById("total-xg-result").textContent = totalXG.toFixed(2);
-}
+  const out = document.getElementById("total-xg-result");
+  if (out) out.textContent = total.toFixed(2);
+};
