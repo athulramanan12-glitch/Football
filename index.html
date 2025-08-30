@@ -1,53 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>xG Calculator</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Expected Goals Calculator</title>
+  <title>Expected Goals (xG) Calculator</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
+@@ -12,37 +12,42 @@
     <h1>Expected Goals (xG) Calculator</h1>
 
-    <div id="shotInputs">
-      <div class="shot-input">
-        <label>Distance to Goal (meters):</label>
-        <input type="number" class="distance" placeholder="Enter distance" step="0.1" required>
+    <form id="xgForm">
+      <label for="distance">Distance to Goal (meters):</label>
+      <input type="number" id="distance" placeholder="Enter distance" step="0.1" required>
 
-        <label>Angle from Goal (degrees):</label>
-        <input type="number" class="angle" placeholder="Enter angle" step="1" max="180" required>
+      <label for="angle">Angle from Goal (degrees):</label>
+      <input type="number" id="angle" placeholder="Enter angle" step="1" max="180" required>
 
-        <label>Type of Shot:</label>
-        <select class="shotType">
-          <option value="foot">Foot</option>
-          <option value="head">Header</option>
-        </select>
+      <label for="shotType">Type of Shot:</label>
+      <select id="shotType">
+        <option value="foot">Foot</option>
+        <option value="head">Header</option>
+      </select>
 
-        <label>Shot Situation:</label>
-        <select class="situation">
-          <option value="openPlay">Open Play</option>
-          <option value="setPiece">Set Piece</option>
-          <option value="counterAttack">Counter Attack</option>
-        </select>
+      <label for="situation">Shot Situation:</label>
+      <select id="situation">
+        <option value="openPlay">Open Play</option>
+        <option value="setPiece">Set Piece</option>
+        <option value="counterAttack">Counter Attack</option>
+      </select>
 
-        <label>Defender Pressure:</label>
-        <select class="pressure">
-          <option value="low">Low Pressure</option>
-          <option value="medium">Medium Pressure</option>
-          <option value="high">High Pressure</option>
-        </select>
+      <label for="pressure">Defender Pressure:</label>
+      <select id="pressure">
+        <option value="low">Low Pressure</option>
+        <option value="medium">Medium Pressure</option>
+        <option value="high">High Pressure</option>
+      </select>
+
+      <button type="button" onclick="calculateXG()">Calculate xG</button>
+      <div id="shotInputs">
+        <div class="shot-input">
+          <label for="distance">Distance to Goal (meters):</label>
+          <input type="number" class="distance" placeholder="Enter distance" step="0.1" required>
+          
+          <label for="angle">Angle from Goal (degrees):</label>
+          <input type="number" class="angle" placeholder="Enter angle" step="1" max="180" required>
+
+          <label for="shotType">Type of Shot:</label>
+          <select class="shotType">
+            <option value="foot">Foot</option>
+            <option value="head">Header</option>
+          </select>
+
+          <label for="situation">Shot Situation:</label>
+          <select class="situation">
+            <option value="openPlay">Open Play</option>
+            <option value="setPiece">Set Piece</option>
+            <option value="counterAttack">Counter Attack</option>
+          </select>
+
+          <label for="pressure">Defender Pressure:</label>
+          <select class="pressure">
+            <option value="low">Low Pressure</option>
+            <option value="medium">Medium Pressure</option>
+            <option value="high">High Pressure</option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <button type="button" onclick="addShot()">+ Add Another Shot</button>
-    <button type="button" onclick="calculateTotalXG()">Calculate Total xG</button>
+      <button type="button" onclick="addShot()">Add Another Shot</button>
+      <button type="button" onclick="calculateTotalXG()">Calculate Total xG</button>
+    </form>
 
     <div id="result">
-      Total xG: <span id="total-xg-result">0.00</span>
+      <h2>Expected Goals (xG): <span id="xg-result">-</span></h2>
+      <h2>Total Expected Goals (xG): <span id="total-xg-result">-</span></h2>
     </div>
   </div>
-
-  <script src="script.js"></script>
-</body>
-</html>
