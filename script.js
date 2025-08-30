@@ -36,7 +36,6 @@ function addShot() {
 }
 
 // Function to calculate xG for a single shot
-// Function to calculate xG for a single shot
 function calculateXGForShot(distance, angle, shotType, situation, pressure) {
   let xg = 0;
 
@@ -79,7 +78,6 @@ function calculateXGForShot(distance, angle, shotType, situation, pressure) {
   // Ensure xG is between 0 and 1
   return Math.max(0, Math.min(1, xg));
 }
-
 
 // Function to calculate the total xG for all shots
 function calculateTotalXG() {
