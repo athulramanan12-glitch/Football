@@ -36,21 +36,15 @@ function addShot() {
 }
 
 // Function to calculate xG for a single shot
+// Function to calculate xG for a single shot
 function calculateXGForShot(distance, angle, shotType, situation, pressure) {
   let xg = 0;
 
-  // Distance-based xG
-  if (distance <= 5) {
-    xg += 0.4;
-  } else if (distance <= 15) {
-    xg += 0.3;
-  } else if (distance <= 25) {
-    xg += 0.2;
-  } else {
-    xg += 0.1;
-  }
+  // Adjust xG based on distance with an exponential decay formula
+  const distanceFactor = Math.exp(-distance / 30);  // Exponentially decaying factor
+  xg += distanceFactor;
 
-  // Angle-based xG
+  // Adjust based on angle
   if (angle <= 30) {
     xg += 0.3;
   } else if (angle <= 60) {
@@ -85,6 +79,7 @@ function calculateXGForShot(distance, angle, shotType, situation, pressure) {
   // Ensure xG is between 0 and 1
   return Math.max(0, Math.min(1, xg));
 }
+
 
 // Function to calculate the total xG for all shots
 function calculateTotalXG() {
